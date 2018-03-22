@@ -1,0 +1,58 @@
+version: 2.0
+综述:
+	run.sh:稳定性测试执行脚本,请执行./run.sh .
+	bc.sh:稳定性测试结果计算脚本,请在测试完成后运行./bc.sh,即可得到各测试项测试时间及UnixBench, Iozone, STREAM测试结果.
+	ping-test:网络测试脚本,请直连两测试主机,设置同一网段IP后运行脚本: ping-test 202.197.84.206 .
+
+一. 测试界面:
+                         /*********************************************************************************/
+                          *                               请选择对应测试项:                                *
+                          *                       ->      1.U盘拷贝测试           <-                       *             
+                          *                       ->      2.Unixbench循环测试     <-                       *             
+                          *                       ->      3.STREAM循环测试        <-                       *             
+                          *                       ->      4.iozone循环测试        <-                       *             
+                          *                       ->      5.内核编译循环测试      <-                       *             
+                          *                       ->      6.ltpstress循环测试     <-                       *             
+                          *                       ->      7.所有项测试            <-                       *             
+                          /*********************************************************************************/
+                                                                                  
+二. 测试介绍:
+   1. U盘,硬盘间相互拷贝数据:
+	a. 选项"1", 在进入前请确认已插U盘和硬盘需要拷贝测试的分区号,如sda1,sdb1等,并请区分开U盘和硬盘分区号;
+	b. U盘与硬盘间单次拷贝数据大小为3G,请先确认U盘大小,循环20次,测试总时长记录在runtime/diskdd.txt中,测试结果保存在diskddresult.txt中;
+	c. 若拷贝出错,则一般可通过"dmesg"来确认,或者直接在串口上查看.
+
+   2. Unixbench循环测试:
+	a. 选项"2", 目前记录为循环8次,每次有1, 4, 8, 16线分测试;
+	b. 测试总时间记录在runtime/UnixBenchtest.txt中,测试结果记录在UnixBenchtest中,分不同线程放置.
+
+   3. STREAM循环测试:
+	a. 选项"3", 目前记录为循环1000次,为16线程测试;
+	b. 测试总时间记录在runtime/STREAMtest.txt中,测试结果记录在STREAM.txt中.
+
+   4. iozone循环测试:
+	a. 选项"4", 分1G, 2G内存同步测试, 缓存为1024k, 记录大小为1M, 16线程测试;
+	b. 目前记录是循环10次,测试总时间记录在runtime/Iozonetest.txt中,测试结果记录在Iozoneresult中.
+
+   5. 内核编译循环测试:
+	a. 选项"5", 目前记录为循环30次,解压,编译,清除记录均放置在kernelcompile内,测试总时间放置在runtime/kernelcompile.txt中.
+	b. 编译过程中请通过串口或者dmesg命令确认系统是否会报错.
+
+   6. ltpstress循环测试:
+	a. 选项"6", 测试选项为-n, -t 8. 为禁网络, 测试时间为8小时.
+	b. 测试总时间记录在runtime/ltpstresstest.txt中,测试记录保存在/tmp/ltpstress.log和/tmp/ltpstress.xxxx.output*.
+
+   7. 所有项测试:
+	a. 选项"7", 即将上述所有测试全部测试一遍,需要设定U盘和硬盘分区号.
+	b. 测试记录和测试时间为上述所述位置.
+
+   PS:
+	a. 若需要重复执行脚本,请在一次测试完成后,移除与run.sh同目录下所有的测试记录项:
+	   diskddresult.txt, runtime, Iozoneresult, kernelcompile, UnixBenchtest, STREAM.txt.
+	b.所有测试软件源码均放置在software/下,请先安装好ltp-full-20140828.tar.xz后再进行测试:
+		tar -xvf ltp-full-20140828.tar.xz
+		cd ltp-full-20140828
+		./configure
+		make
+		make install
+
