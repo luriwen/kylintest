@@ -199,8 +199,9 @@ Iozone()
 	cd iozone3_326/src/current/
 	make linux-arm
 
-	echo "iozone -a -i 0 -i 1 -i 2 -f result/iozone/iozone.testfile -n 8G -g 8G -Rb result/iozone/iozone-test.xls"
-	./iozone -a -i 0 -i 1 -i 2 -f ../../../../result/iozone/iozone.testfile -n 8G -g 8G -Rb ../../../../result/iozone/iozone-test.xls
+	eval $(awk '($1 == "MemTotal:"){printf("memsize=%f",$2*2/1048576)}' /proc/meminfo)
+	echo "iozone -a -i 0 -i 1 -i 2 -f result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb result/iozone/iozone-test.xls"
+	./iozone -a -i 0 -i 1 -i 2 -f ../../../../result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb ../../../../result/iozone/iozone-test.xls
 
 	cd ../../../../
 	echo "Iozone测试结束时间:" >> runtime/iozone/Iozonetest.txt
