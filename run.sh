@@ -41,70 +41,47 @@ cat <<-END >&2
 END
 
 
-diskcptest()
+Diskcptest()
 {
 	outecho
+	mkdir -p runtime/udisk/
+	mkdir -p result/udisk/
 	echo "				U盘拷贝测试开始!"
-cat<<-END >&2
-		usage:										
-					mkdir -p /opt/Udisk /opt/sata				
-					mount /dev/sda* /sata/					
-					mount /dev/sdb* /Udisk/					
-					dd if=/dev/sdb* of=/opt/sata/Udisktest bs=10G count=5	
-					dd if=/dev/sda* of=/opt/Udisk/satatest bs=10G count=5	
-					rm -rf /opt/sata /opt/Udisk
-END
 
-	echo -n "请输入dev下U盘分区号(例如:sdb1):"
-	read sdb
-	echo -n "请输入dev下硬盘分区号,(例如:sda2):"
-	read sda
-	
-	echo "硬盘拷贝数据开始时间:" >> runtime/diskdd.txt
-	date "+%s">> runtime/diskdd.txt	
+	eval $(awk '($1 == "udisk:"){printf("udisk=%s",$2)}' paraconfig)
+	eval $(awk '($1 == "udiskfile:"){printf("udiskfile=%s",$2)}' paraconfig)
+	eval $(awk '($1 == "ucount:"){printf("ucount=%d",$2)}' paraconfig)
+	eval $(awk '($1 == "udiskdir:"){printf("udiskdir=%s",$2)}' paraconfig)
+	eval $(awk '($1 == "ufiledir:"){printf("ufiledir=%s",$2)}' paraconfig)
 
-	for ((k=1; k<=20; k++))
+	mkdir -p $udiskdir
+	mount /dev/$udisk $udiskdir
+
+	echo "u盘拷贝数据开始时间:" >> runtime/udisk/udisktime
+	date >> runtime/udisk/udisktime
+
+	for ((k=1; k<=$ucount; k++))
 	do
 		outecho
-		echo "				第 $k 次数据拷贝!" >> diskddresult.txt 2>&1
-		echo "                          第 $k 次数据拷贝!"
-		mkdir -p /opt/udisk /opt/sata
-		mount /dev/$sdb /opt/udisk
-		mount /dev/$sda /opt/sata
+		echo "第 $k 次数据拷贝!"
+		echo "第 $k 次数据拷贝!" >> result/udisk/udiskresult
 
-		echo "				从硬盘向U盘拷贝3G大数据:" >> diskddresult.txt 2>&1
-		dd if=/dev/$sda of=/opt/udisk/udisktest bs=1G count=3 >> diskddresult.txt 2>&1
-		echo "拷贝数据大小:" >> diskddresult.txt 2>&1
-		du -sh /opt/udisk/udisktest >> diskddresult.txt 2>&1
-		rm /opt/udisk/udisktest
+		echo "从硬盘向U盘拷贝文件:" >> result/udisk/udiskresult
+		cp $ufiledir/$udiskfile  $udiskdir
+		rm $ufiledir/$udiskfile
 
-		echo "				/dev/zero下向U盘内拷贝3G大数据:" >> diskddresult.txt 2>&1
-		dd if=/dev/zero of=/opt/udisk/udisktest bs=1G count=3 >> diskddresult.txt 2>&1
-		echo "拷贝数据大小:" >> diskddresult.txt 2>&1
-		du -sh /opt/udisk/udisktest >> diskddresult.txt 2>&1
-		rm /opt/udisk/udisktest
-		
-		echo "				从U盘向硬盘拷贝3G大数据:" >> diskddresult.txt 2>&1
-		dd if=/dev/$sdb of=/opt/sata/satatest bs=1G count=3 >> diskddresult.txt 2>&1
-		echo "拷贝数据大小:" >> diskddresult.txt 2>&1
-		du -sh /opt/sata/satatest >> diskddresult.txt 2>&1
-		rm /opt/sata/satatest
-		
-		echo "				/dev/zero下向硬盘拷贝3G大数据:" >> diskddresult.txt 2>&1
-		dd if=/dev/zero of=/opt/sata/satatest bs=1G count=3 >> diskddresult.txt 2>&1
-		echo "拷贝数据大小:" >> diskddresult.txt 2>&1
-		du -sh /opt/sata/satatest >> diskddresult.txt 2>&1
-		rm /opt/sata/satatest
+		echo "从u盘向硬盘拷贝文件:" >> result/udisk/udiskresult
+		cp $udiskdir/$udiskfile  $ufiledir
+		rm $udiskdir/$udiskfile
 
-		umount /opt/udisk
-		umount /opt/sata
-		rm -rf /opt/udisk /opt/sata
-		echo "				第 $k 次数据拷贝结束!" >> diskddresult.txt 2>&1
-		echo "                          第 $k 次数据拷贝结束!"
+		echo "第 $k 次数据拷贝结束!" >> result/udisk/udiskresult
+		echo "第 $k 次数据拷贝结束!"
 		outecho
 	done
-	echo "硬件拷贝数据结束时间:" >> runtime/diskdd.txt
-	date "+%s">> runtime/diskdd.txt
+	umount $udiskdir
+
+	echo "u盘拷贝数据结束时间:" >> runtime/udisk/udisktime
+	date >> runtime/udisk/udisktime
 	echo "				U盘拷贝测试结束!"
 	outecho
 }
@@ -117,7 +94,7 @@ UnixBench()
 	outecho
 	echo "				UnixBench测试开始!"
 	echo "UnixBench测试开始时间:" >> runtime/UnixBench/UnixBenchtest.txt
-	date "+%s">> runtime/UnixBench/UnixBenchtest.txt
+	date >> runtime/UnixBench/UnixBenchtest.txt
 	
 
 	cd software
@@ -148,7 +125,7 @@ UnixBench()
 	cd ..
 
 	echo "UnixBench测试结束时间:" >> runtime/UnixBench/UnixBenchtest.txt
-	date "+%s">> runtime/UnixBench/UnixBenchtest.txt
+	date >> runtime/UnixBench/UnixBenchtest.txt
 	echo "				UnixBench测试结束!"
 	outecho
 }
@@ -161,7 +138,7 @@ STREAM()
 	outecho
 	echo "				STREAM测试开始!"
 	echo "STREAM测试开始时间:" >> runtime/runtime/STREAMtest.txt
-	date "+%s">> runtime/runtime/STREAMtest.txt
+	date >> runtime/runtime/STREAMtest.txt
 
 	for ((j=1; j<=5; j++))
 	do
@@ -180,7 +157,7 @@ STREAM()
 	done
 
 	echo "STREAM测试结束时间:" >> runtime/stream/STREAMtest.txt
-	date "+%s">> runtime/stream/STREAMtest.txt
+	date >> runtime/stream/STREAMtest.txt
 	echo "				STREAM测试结束!" 
 	outecho
 }
@@ -193,7 +170,7 @@ Iozone()
 	outecho
 	echo "				Iozone测试开始!"
 	echo "Iozone测试开始时间:" >> runtime/iozone/Iozonetest.txt
-	date "+%s">> runtime/iozone/Iozonetest.txt
+	date >> runtime/iozone/Iozonetest.txt
 	
 	cd software
 	tar -xvf iozone3_326.tar
@@ -212,7 +189,7 @@ Iozone()
 
 	cd ../../../../
 	echo "Iozone测试结束时间:" >> runtime/iozone/Iozonetest.txt
-	date "+%s">> runtime/iozone/Iozonetest.txt
+	date >> runtime/iozone/Iozonetest.txt
 	echo "				Iozone测试结束!"
 	outecho
 }
@@ -225,7 +202,7 @@ Lmbench()
 	outecho
 	echo "				lmbench测试开始"
 	echo "lmbench测试开始时间:" >> runtime/lmbench/lmbenchtest.txt
-	date "+%s">> runtime/lmbench/lmbenchtest.txt
+	date >> runtime/lmbench/lmbenchtest.txt
 
 	cd software
 	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2
@@ -233,7 +210,7 @@ Lmbench()
 	make results
 
 	echo "lmbench测试结束时间:" >> runtime/lmbench/lmbenchtest.txt
-	date "+%s">> runtime/lmbench/lmbenchtest.txt
+	date >> runtime/lmbench/lmbenchtest.txt
 
 	make see
 	cp -r results/* ../../../result/lmbench/
@@ -262,26 +239,26 @@ Iperf()
 
 	echo "iperf  测试开始"
 	echo "iperf TCP测试开始时间:" >> runtime/iperf/iperftime
-	date "+%s" >> runtime/iperf/iperftime
+	date >> runtime/iperf/iperftime
 
 
 	iperf -s >> result/iperf/iperfresult &
 	iperf -c $ipaddr -i 1 -t $iperftime >> result/iperf/iperfresult
 	echo "iperf TCP测试结束时间:" >> runtime/iperf/iperftime
-	date "+%s" >> runtime/iperf/iperftime
+	date >> runtime/iperf/iperftime
 	killall iperf
 
 	echo "iperf UDP测试开始时间:" >> runtime/iperf/iperftime
-	date "+%s" >> runtime/iperf/iperftime
+	date >> runtime/iperf/iperftime
 	iperf -u -s >> result/iperf/iperfresult &
 	iperf -u -c $ipaddr -i 1 -t $iperftime -b $bandwidth >> result/iperf/iperfresult
 	echo "iperf UDP测试结束时间:" >> runtime/iperf/iperftime
-	date "+%s" >> runtime/iperf/iperftime
+	date >> runtime/iperf/iperftime
 
 	killall iperf
 
 	echo "iperf测试结束时间:" >> runtime/iperf/iperftime
-	date "+%s" >> runtime/iperf/iperftime
+	date >> runtime/iperf/iperftime
 
 
 }
@@ -292,7 +269,7 @@ read number
 
 if [ $number -eq 1 ];then
 	echo "				U盘拷贝测试:				"
-	diskcptest
+	Diskcptest
 fi
 
 if [ $number -eq "2" ];then
@@ -325,7 +302,7 @@ if [ $number -eq "7" ];then
 	echo "				1-6所有选项依次测试!"
 	
 	echo "				U盘拷贝测试:					"
-	diskcptest
+	Diskcptest
 
 	echo "                          Unixbench循环测试:"
 	UnixBench

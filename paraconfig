@@ -1,4 +1,29 @@
+#######################################################################
+#u盘测试参数
+#
+#udisk: dev下u盘分区号(例如：sdb1)
+udisk: sdc1
+
+#udiskfile: 拷贝的文件名
+udiskfile: test.mp4
+
+#ufiledir: 拷贝的文件目录
+ufiledir: /opt
+
+#ucount: 拷贝循环次数
+ucount: 2
+
+#udiskdir: u盘挂载目录
+udiskdir: /opt/udisk
+
+########################################################################
 #iperf 测试参数
+#
+#ipaddr: 服务ip地址
 ipaddr: 192.168.140.223
+
+#bandwidth：udp测试时的带宽
 bandwidth: 1000M
-iperftime: 10
+
+#iperftime：测试时间(单位为秒)
+iperftime: 3600
