@@ -197,9 +197,15 @@ Iozone()
 	cd software
 	tar -xvf iozone3_326.tar
 	cd iozone3_326/src/current/
-	make linux-arm
+	
+	aarch=$(uname -m)
+	if [ $aarch == x86_64 ]; then
+		make linux-AMD64
+	elif [ $aarch == aarch64 ]; then
+		make linux-arm
+	fi
 
-	eval $(awk '($1 == "MemTotal:"){printf("memsize=%f",$2*2/1048576)}' /proc/meminfo)
+	eval $(awk '($1 == "MemTotal:"){printf("memsize=%d",$2*2/1048576)}' /proc/meminfo)
 	echo "iozone -a -i 0 -i 1 -i 2 -f result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb result/iozone/iozone-test.xls"
 	./iozone -a -i 0 -i 1 -i 2 -f ../../../../result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb ../../../../result/iozone/iozone-test.xls
 
