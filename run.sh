@@ -29,6 +29,7 @@ cat <<-END >&2
 				*			->	3.STREAM 测试	<-			 *
 				*			->	4.iozone 测试	<-			 *
 				*			->	5.lmbench 测试	<-			 *
+				*			->	6.iperf 测试	<-			 *
 				*			->	7.所有项测试		<-			 *
 				/*********************************************************************************/
 
@@ -235,9 +236,55 @@ Lmbench()
 	date "+%s">> runtime/lmbench/lmbenchtest.txt
 
 	make see
-	cp -r results/* ../../../result/lmbench 
+	cp -r results/* ../../../result/lmbench/
+	cd ../../../ 	
 }
 
+Iperf()
+{
+	mkdir -p result/iperf
+	mkdir -p runtime/iperf
+
+	outecho
+	eval $(awk '($1 == "ipaddr:"){printf("ipaddr=%s",$2)}' paraconfig)
+	eval $(awk '($1 == "bandwidth:"){printf("bandwidth=%s",$2)}' paraconfig)
+	eval $(awk '($1 == "iperftime:"){printf("iperftime=%d",$2)}' paraconfig)
+	lost_rate=`ping -c 10 -w 10 ${ipaddr} \
+		| grep 'packet loss' \
+		| awk -F'packet loss' '{ print $1 }' \
+		| awk '{ print $NF }' \
+		| sed 's/%//g'`
+
+	if [ $lost_rate -eq 100 ]; then
+		echo "网络不通,请配置好网络环境"
+		return 1
+	fi
+
+	echo "iperf  测试开始"
+	echo "iperf TCP测试开始时间:" >> runtime/iperf/iperftime
+	date "+%s" >> runtime/iperf/iperftime
+
+
+	iperf -s >> result/iperf/iperfresult &
+	iperf -c $ipaddr -i 1 -t $iperftime >> result/iperf/iperfresult
+	echo "iperf TCP测试结束时间:" >> runtime/iperf/iperftime
+	date "+%s" >> runtime/iperf/iperftime
+	killall iperf
+
+	echo "iperf UDP测试开始时间:" >> runtime/iperf/iperftime
+	date "+%s" >> runtime/iperf/iperftime
+	iperf -u -s >> result/iperf/iperfresult &
+	iperf -u -c $ipaddr -i 1 -t $iperftime -b $bandwidth >> result/iperf/iperfresult
+	echo "iperf UDP测试结束时间:" >> runtime/iperf/iperftime
+	date "+%s" >> runtime/iperf/iperftime
+
+	killall iperf
+
+	echo "iperf测试结束时间:" >> runtime/iperf/iperftime
+	date "+%s" >> runtime/iperf/iperftime
+
+
+}
 
 echo -n "请输入对应号码:"
 read number
@@ -268,6 +315,11 @@ if [ $number -eq "5" ];then
 	Lmbench
 fi
 
+if [ $number -eq "6" ];then
+	echo "				iperf测试:"
+	Iperf
+fi
+
 
 if [ $number -eq "7" ];then
 	echo "				1-6所有选项依次测试!"
@@ -286,6 +338,9 @@ if [ $number -eq "7" ];then
 
 	echo "                          lmbench测试:"
 	Lmbench
+
+	echo "                          iperf测试:"
+	Iperf
 
 fi
 

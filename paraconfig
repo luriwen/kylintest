@@ -1,0 +1,4 @@
+#iperf 测试参数
+ipaddr: 192.168.140.223
+bandwidth: 1000M
+iperftime: 10
