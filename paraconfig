@@ -16,6 +16,7 @@ ucount: 2
 #udiskdir: u盘挂载目录
 udiskdir: /opt/udisk
 
+
 ########################################################################
 #iperf 测试参数
 #
@@ -28,6 +29,23 @@ bandwidth: 1000M
 #iperftime：测试时间(单位为秒)
 iperftime: 3600
 
+
 ########################################################################
+#specjvm2008 测试参数
+#
 #specjvmins: SPECjvm 安装目录(绝对路径)，默认为/SPECjvm2008
 specjvmins: /
+
+
+########################################################################
+#ttytest 测试参数
+#
+#testcom1: 测试串口1
+testcom1: /dev/ttyS1
+
+#testcom2: 测试串口2
+testcom2: /dev/ttyS2
+#如果，将同一串口比如ttyS3的Rx、Tx短接，则参数testcom1、testcom2都为/dev/ttyS3.
+
+#ttytime: 测试时间(单位min)
+ttytime: 30

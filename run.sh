@@ -31,7 +31,8 @@ cat <<-END >&2
 				*			->	5.lmbench 测试	<-			 *
 				*			->	6.iperf 测试	<-			 *
 				*			->	7.specjvm 测试	<-			 *
-				*			->	8.所有项测试		<-			 *
+				*			->	8.串口测试	<-			 *
+				*			->	9.所有项测试		<-			 *
 				/*********************************************************************************/
 
 
@@ -273,6 +274,9 @@ Specjvm()
 	mkdir -p result/specjvm
 	mkdir -p runtime/specjvm
 
+	echo "specjvm  测试开始"
+	echo "specjvm 测试开始时间" >> runtime/specjvm/specjvmtime
+	date >> runtime/specjvm/specjvmtime
 	dirnow=`pwd`
 	aarch=$(uname -m)
 	eval $(awk '($1 == "specjvmins:"){printf("specjvmins=%s",$2)}' paraconfig)
@@ -310,6 +314,38 @@ EOF
 
 	cp results/* -r $dirnow/result/specjvm/
 	cd $dirnow
+
+	echo "specjvm 测试结束"
+	echo "specjvm 测试结束时间" >> runtime/specjvm/specjvmtime
+	date >> runtime/specjvm/specjvmtime
+}
+
+Ttytest()
+{
+	mkdir -p result/ttytest/
+	mkdir -p runtime/ttytest/
+
+	eval $(awk '($1 == "testcom1:"){printf("testcom1=%s",$2)}' paraconfig)
+	eval $(awk '($1 == "testcom2:"){printf("testcom2=%s",$2)}' paraconfig)
+	eval $(awk '($1 == "ttytime:"){printf("ttytime=%d",$2)}' paraconfig)
+
+	echo "tty 测试开始"
+	echo "tty 测试开始时间" >> runtime/ttytest/ttytime
+	date >> runtime/ttytest/ttytime
+
+	cd software/
+	tar -xvf ttytest.tar
+	cd ttytest/
+
+	gcc -o com com.c
+
+	./com $testcom1 $testcom2 $ttytime
+
+	cd ../../
+
+	echo "tty 测试结束"
+	echo "tty 测试结束时间" >> runtime/ttytest/ttytime
+	date >> runtime/ttytest/ttytime
 }
 
 echo -n "请输入对应号码:"
@@ -352,7 +388,12 @@ if [ $number -eq "7" ];then
 fi
 
 if [ $number -eq "8" ];then
-	echo "				1-6所有选项依次测试!"
+	echo "				串口测试:"
+	Ttytest
+fi
+
+if [ $number -eq "9" ];then
+	echo "				1-9所有选项依次测试!"
 	
 	echo "				U盘拷贝测试:					"
 	Diskcptest
@@ -375,5 +416,7 @@ if [ $number -eq "8" ];then
 	echo "                          specjvm测试:"
 	Specjvm
 
+	echo "                          串口测试:"
+	Ttytest
 fi
 
