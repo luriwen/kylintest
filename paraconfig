@@ -27,3 +27,7 @@ bandwidth: 1000M
 
 #iperftime：测试时间(单位为秒)
 iperftime: 3600
+
+########################################################################
+#specjvmins: SPECjvm 安装目录(绝对路径)，默认为/SPECjvm2008
+specjvmins: /

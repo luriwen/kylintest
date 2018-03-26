@@ -30,7 +30,8 @@ cat <<-END >&2
 				*			->	4.iozone 测试	<-			 *
 				*			->	5.lmbench 测试	<-			 *
 				*			->	6.iperf 测试	<-			 *
-				*			->	7.所有项测试		<-			 *
+				*			->	7.specjvm 测试	<-			 *
+				*			->	8.所有项测试		<-			 *
 				/*********************************************************************************/
 
 
@@ -263,6 +264,54 @@ Iperf()
 
 }
 
+Specjvm()
+{
+	#运行此测试需要java环境，安装java及对应版本的jdk
+	#apt-get install java
+	#apt-get install openjdk-8-jdk
+
+	mkdir -p result/specjvm
+	mkdir -p runtime/specjvm
+
+	dirnow=`pwd`
+	aarch=$(uname -m)
+	eval $(awk '($1 == "specjvmins:"){printf("specjvmins=%s",$2)}' paraconfig)
+	cd software
+	java -jar SPECjvm2008_1_01_setup.jar -i console <<EOF
+1
+
+
+
+
+
+
+
+
+Y
+$specjvmins/SPECjvm2008
+Y
+
+
+
+EOF
+
+
+	if [ $aarch == x86_64 ]; then
+		export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+	elif [ $aarch == aarch64 ]; then
+		export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64
+	fi
+
+	export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:/lib.dt.jar
+	export PATH=$JAVA_HOME/bin:$PATH
+
+	cd $specjvmins/SPECjvm2008/
+	java -jar SPECjvm2008.jar -ikv
+
+	cp results/* -r $dirnow/result/specjvm/
+	cd $dirnow
+}
+
 echo -n "请输入对应号码:"
 read number
 
@@ -297,8 +346,12 @@ if [ $number -eq "6" ];then
 	Iperf
 fi
 
-
 if [ $number -eq "7" ];then
+	echo "				specjvm测试:"
+	Specjvm
+fi
+
+if [ $number -eq "8" ];then
 	echo "				1-6所有选项依次测试!"
 	
 	echo "				U盘拷贝测试:					"
@@ -318,6 +371,9 @@ if [ $number -eq "7" ];then
 
 	echo "                          iperf测试:"
 	Iperf
+
+	echo "                          specjvm测试:"
+	Specjvm
 
 fi
 
