@@ -26,13 +26,14 @@ cat <<-END >&2
 				*				请选择对应测试项:				 *
 				*			->	1.U盘拷贝测试		<-			 *
 				*			->	2.Unixbench 测试	<-			 *
-				*			->	3.STREAM 测试	<-			 *
-				*			->	4.iozone 测试	<-			 *
-				*			->	5.lmbench 测试	<-			 *
-				*			->	6.iperf 测试	<-			 *
-				*			->	7.specjvm 测试	<-			 *
-				*			->	8.串口测试	<-			 *
+				*			->	3.STREAM 测试		<-			 *
+				*			->	4.iozone 测试		<-			 *
+				*			->	5.lmbench 测试		<-			 *
+				*			->	6.iperf 测试		<-			 *
+				*			->	7.specjvm 测试		<-			 *
+				*			->	8.串口测试		<-			 *
 				*			->	9.所有项测试		<-			 *
+				*  q:退出
 				/*********************************************************************************/
 
 
@@ -139,8 +140,8 @@ STREAM()
 
 	outecho
 	echo "				STREAM测试开始!"
-	echo "STREAM测试开始时间:" >> runtime/runtime/STREAMtest.txt
-	date >> runtime/runtime/STREAMtest.txt
+	echo "STREAM测试开始时间:" >> runtime/stream/STREAMtest.txt
+	date >> runtime/stream/STREAMtest.txt
 
 	for ((j=1; j<=5; j++))
 	do
@@ -351,48 +352,47 @@ Ttytest()
 echo -n "请输入对应号码:"
 read number
 
-
-if [ $number -eq 1 ];then
+if [ $number == 1 ];then
 	echo "				U盘拷贝测试:				"
 	Diskcptest
 fi
 
-if [ $number -eq "2" ];then
+if [ $number == 2 ];then
 	echo "				Unixbench测试:"
 	UnixBench
 fi
 
-if [ $number -eq "3" ];then
+if [ $number == 3 ];then
 	echo "				STREAM测试:"
 	STREAM
 fi
 
-if [ $number -eq "4" ];then
+if [ $number == 4 ];then
 	echo "				iozone测试:"
 	Iozone
 fi
 
-if [ $number -eq "5" ];then
+if [ $number == 5 ];then
 	echo "				lmbench测试:"
 	Lmbench
 fi
 
-if [ $number -eq "6" ];then
+if [ $number == 6 ];then
 	echo "				iperf测试:"
 	Iperf
 fi
 
-if [ $number -eq "7" ];then
+if [ $number == 7 ];then
 	echo "				specjvm测试:"
 	Specjvm
 fi
 
-if [ $number -eq "8" ];then
+if [ $number == 8 ];then
 	echo "				串口测试:"
 	Ttytest
 fi
 
-if [ $number -eq "9" ];then
+if [ $number == 9 ];then
 	echo "				1-9所有选项依次测试!"
 	
 	echo "				U盘拷贝测试:					"
@@ -420,3 +420,8 @@ if [ $number -eq "9" ];then
 	Ttytest
 fi
 
+if [ $number == q ];then
+	exit 0
+fi
+
+exit 0
