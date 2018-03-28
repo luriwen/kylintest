@@ -18,6 +18,16 @@ udiskdir: /opt/udisk
 
 
 ########################################################################
+#stream 测试参数
+#
+#streamthread: stream测试线程数
+streamthread: 16
+
+#streamcount: stream测试轮数
+streamcount: 5
+
+
+########################################################################
 #iperf 测试参数
 #
 #ipaddr: 服务ip地址

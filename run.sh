@@ -91,13 +91,13 @@ Diskcptest()
 
 UnixBench()
 {
-	mkdir -p result/UnixBench
-	mkdir -p runtime/UnixBench
+	mkdir -p result/unixbench
+	mkdir -p runtime/unixbench
 
 	outecho
 	echo "				UnixBench测试开始!"
-	echo "UnixBench测试开始时间:" >> runtime/UnixBench/UnixBenchtest.txt
-	date >> runtime/UnixBench/UnixBenchtest.txt
+	echo "UnixBench测试开始时间:" >> runtime/unixbench/unixbenchtime
+	date >> runtime/unixbench/unixbenchtime
 	
 
 	cd software
@@ -107,28 +107,28 @@ UnixBench()
 
 	outecho
 	echo "					1线程测试:					"
-	./Run -c 1 >> ../../result/UnixBench/run-c-1.txt
+	./Run -c 1 >> ../../result/unixbench/run-c-1
 	outecho
 	
 	outecho
 	echo "					4线程测试:					"
-	./Run -c 4 >> ../../result/UnixBench/run-c-4.txt
+	./Run -c 4 >> ../../result/unixbench/run-c-4
 	outecho
 
 	outecho
 	echo "					8线程测试:					"
-	./Run -c 8 >> ../../result/UnixBench/run-c-8.txt
+	./Run -c 8 >> ../../result/unixbench/run-c-8
 	outecho
 
 	outecho
 	echo "					16线程测试:					"
-	./Run -c 16 >> ../../result/UnixBench/run-c-16.txt
+	./Run -c 16 >> ../../result/unixbench/run-c-16
 	outecho
 	cd ..
 	cd ..
 
-	echo "UnixBench测试结束时间:" >> runtime/UnixBench/UnixBenchtest.txt
-	date >> runtime/UnixBench/UnixBenchtest.txt
+	echo "UnixBench测试结束时间:" >> runtime/unixbench/unixbenchtime
+	date >> runtime/unixbench/unixbenchtime
 	echo "				UnixBench测试结束!"
 	outecho
 }
@@ -138,29 +138,32 @@ STREAM()
 	mkdir -p result/stream
 	mkdir -p runtime/stream
 
+	eval $(awk '($1 == "streamcount:"){printf("streamcount=%d",$2)}' paraconfig)
+	eval $(awk '($1 == "streamthread:"){printf("streamthread=%d",$2)}' paraconfig)
+
 	outecho
 	echo "				STREAM测试开始!"
-	echo "STREAM测试开始时间:" >> runtime/stream/STREAMtest.txt
-	date >> runtime/stream/STREAMtest.txt
+	echo "STREAM测试开始时间:" >> runtime/stream/streamtime
+	date >> runtime/stream/streamtime
 
-	for ((j=1; j<=5; j++))
+	for ((j=1; j<=$streamcount; j++))
 	do
 		cd software
 		tar -xvf STREAM-32.tar.bz2 > /dev/null
 		cd stream
-		gcc -O -fopenmp -DTHREAD_NBR=16 -o stream_d stream_d.c second_wall.c -lm
+		gcc -O -fopenmp -DTHREAD_NBR=$streamthread -o stream_d stream_d.c second_wall.c -lm
 
 		outecho
 		echo "第 $j 次测试开始！"
-		echo "第 $j 次测试结果:" >> ../../result/stream/STREAM.txt
-		./stream_d >> ../../result/stream/STREAM.txt
+		echo "第 $j 次测试结果:" >> ../../result/stream/streamresult
+		./stream_d >> ../../result/stream/streamresult
 		cd ../..
 		echo "第 $j 次测试结束！"
 		outecho
 	done
 
-	echo "STREAM测试结束时间:" >> runtime/stream/STREAMtest.txt
-	date >> runtime/stream/STREAMtest.txt
+	echo "STREAM测试结束时间:" >> runtime/stream/streamtime
+	date >> runtime/stream/streamtime
 	echo "				STREAM测试结束!" 
 	outecho
 }
@@ -172,8 +175,8 @@ Iozone()
 
 	outecho
 	echo "				Iozone测试开始!"
-	echo "Iozone测试开始时间:" >> runtime/iozone/Iozonetest.txt
-	date >> runtime/iozone/Iozonetest.txt
+	echo "Iozone测试开始时间:" >> runtime/iozone/iozonetime
+	date >> runtime/iozone/iozonetime
 	
 	cd software
 	tar -xvf iozone3_326.tar
@@ -187,12 +190,12 @@ Iozone()
 	fi
 
 	eval $(awk '($1 == "MemTotal:"){printf("memsize=%d",$2*2/1048576)}' /proc/meminfo)
-	echo "iozone -a -i 0 -i 1 -i 2 -f result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb result/iozone/iozone-test.xls"
-	./iozone -a -i 0 -i 1 -i 2 -f ../../../../result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb ../../../../result/iozone/iozone-test.xls
+	echo "iozone -a -i 0 -i 1 -i 2 -f result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb result/iozone/iozoneresult"
+	./iozone -a -i 0 -i 1 -i 2 -f ../../../../result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb ../../../../result/iozone/iozoneresult
 
 	cd ../../../../
-	echo "Iozone测试结束时间:" >> runtime/iozone/Iozonetest.txt
-	date >> runtime/iozone/Iozonetest.txt
+	echo "Iozone测试结束时间:" >> runtime/iozone/iozonetime
+	date >> runtime/iozone/iozonetime
 	echo "				Iozone测试结束!"
 	outecho
 }
@@ -204,16 +207,16 @@ Lmbench()
 
 	outecho
 	echo "				lmbench测试开始"
-	echo "lmbench测试开始时间:" >> runtime/lmbench/lmbenchtest.txt
-	date >> runtime/lmbench/lmbenchtest.txt
+	echo "lmbench测试开始时间:" >> runtime/lmbench/lmbenchtime
+	date >> runtime/lmbench/lmbenchtime
 
 	cd software
 	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2
 	cd lmbench/lmbench-3.0-a9
 	make results
 
-	echo "lmbench测试结束时间:" >> runtime/lmbench/lmbenchtest.txt
-	date >> runtime/lmbench/lmbenchtest.txt
+	echo "lmbench测试结束时间:" >> runtime/lmbench/lmbenchtime
+	date >> runtime/lmbench/lmbenchtime
 
 	make see
 	cp -r results/* ../../../result/lmbench/
@@ -282,6 +285,8 @@ Specjvm()
 	aarch=$(uname -m)
 	eval $(awk '($1 == "specjvmins:"){printf("specjvmins=%s",$2)}' paraconfig)
 	cd software
+	tar -xvf specjvm2008.tar
+	cd specjvm2008/
 	java -jar SPECjvm2008_1_01_setup.jar -i console <<EOF
 1
 
@@ -310,10 +315,14 @@ EOF
 	export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:/lib.dt.jar
 	export PATH=$JAVA_HOME/bin:$PATH
 
+	cp run-specjvm.sh $specjvmins/SPECjvm2008/
 	cd $specjvmins/SPECjvm2008/
-	java -jar SPECjvm2008.jar -ikv
+#	java -jar SPECjvm2008.jar -ikv
+	chmod +x run-specjvm.sh
+	./run-specjvm.sh
 
 	cp results/* -r $dirnow/result/specjvm/
+	rm run-specjvm.sh
 	cd $dirnow
 
 	echo "specjvm 测试结束"
