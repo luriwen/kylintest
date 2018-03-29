@@ -101,7 +101,7 @@ UnixBench()
 	
 
 	cd software
-	tar -xvf UnixBench5.1.3.tar
+	tar -xvf UnixBench5.1.3.tar > /dev/null 2>&1
 	cd UnixBench/
 	make 
 
@@ -149,7 +149,7 @@ STREAM()
 	for ((j=1; j<=$streamcount; j++))
 	do
 		cd software
-		tar -xvf STREAM-32.tar.bz2 > /dev/null
+		tar -xvf STREAM-32.tar.bz2 > /dev/null 2>&1
 		cd stream
 		gcc -O -fopenmp -DTHREAD_NBR=$streamthread -o stream_d stream_d.c second_wall.c -lm
 
@@ -179,14 +179,14 @@ Iozone()
 	date >> runtime/iozone/iozonetime
 	
 	cd software
-	tar -xvf iozone3_326.tar
+	tar -xvf iozone3_326.tar > /dev/null 2>&1
 	cd iozone3_326/src/current/
 	
 	aarch=$(uname -m)
 	if [ $aarch == x86_64 ]; then
-		make linux-AMD64
+		make linux-AMD64 /dev/null 2>&1
 	elif [ $aarch == aarch64 ]; then
-		make linux-arm
+		make linux-arm /dev/null 2>&1
 	fi
 
 	eval $(awk '($1 == "MemTotal:"){printf("memsize=%d",$2*2/1048576)}' /proc/meminfo)
@@ -211,7 +211,7 @@ Lmbench()
 	date >> runtime/lmbench/lmbenchtime
 
 	cd software
-	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2
+	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2 /dev/null 2>&1
 	cd lmbench/lmbench-3.0-a9
 	make results
 
@@ -285,7 +285,7 @@ Specjvm()
 	aarch=$(uname -m)
 	eval $(awk '($1 == "specjvmins:"){printf("specjvmins=%s",$2)}' paraconfig)
 	cd software
-	tar -xvf specjvm2008.tar
+	tar -xvf specjvm2008.tar /dev/null 2>&1
 	cd specjvm2008/
 	java -jar SPECjvm2008_1_01_setup.jar -i console <<EOF
 1
@@ -344,7 +344,7 @@ Ttytest()
 	date >> runtime/ttytest/ttytime
 
 	cd software/
-	tar -xvf ttytest.tar
+	tar -xvf ttytest.tar /dev/null 2>&1
 	cd ttytest/
 
 	gcc -o com com.c
