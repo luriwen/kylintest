@@ -186,7 +186,7 @@ run.sh: 测试执行脚本。
 
      testcom2：测试串口2;
 
-     如果，为单串口测试，则testcom1和testcom2为同一个串口。
+     如果，为单串口测试，则testcom1和testcom2为同一个串口。如果不想运行串口测试程序，则可将两个参数都设置成NULL。
 
    - ttytime：测试时间，单位为min。
 

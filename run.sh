@@ -184,9 +184,9 @@ Iozone()
 	
 	aarch=$(uname -m)
 	if [ $aarch == x86_64 ]; then
-		make linux-AMD64 /dev/null 2>&1
+		make linux-AMD64 > /dev/null 2>&1
 	elif [ $aarch == aarch64 ]; then
-		make linux-arm /dev/null 2>&1
+		make linux-arm > /dev/null 2>&1
 	fi
 
 	eval $(awk '($1 == "MemTotal:"){printf("memsize=%d",$2*2/1048576)}' /proc/meminfo)
@@ -211,7 +211,7 @@ Lmbench()
 	date >> runtime/lmbench/lmbenchtime
 
 	cd software
-	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2 /dev/null 2>&1
+	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2 > /dev/null 2>&1
 	cd lmbench/lmbench-3.0-a9
 	make results
 
@@ -285,7 +285,7 @@ Specjvm()
 	aarch=$(uname -m)
 	eval $(awk '($1 == "specjvmins:"){printf("specjvmins=%s",$2)}' paraconfig)
 	cd software
-	tar -xvf specjvm2008.tar /dev/null 2>&1
+	tar -xvf specjvm2008.tar > /dev/null 2>&1
 	cd specjvm2008/
 	java -jar SPECjvm2008_1_01_setup.jar -i console <<EOF
 1
@@ -339,12 +339,17 @@ Ttytest()
 	eval $(awk '($1 == "testcom2:"){printf("testcom2=%s",$2)}' paraconfig)
 	eval $(awk '($1 == "ttytime:"){printf("ttytime=%d",$2)}' paraconfig)
 
+	if [ $testcom1 == "NULL" -o $testcom2 == "NULL" ]
+	then
+		return 0
+	fi
+
 	echo "tty 测试开始"
 	echo "tty 测试开始时间" >> runtime/ttytest/ttytime
 	date >> runtime/ttytest/ttytime
 
 	cd software/
-	tar -xvf ttytest.tar /dev/null 2>&1
+	tar -xvf ttytest.tar > /dev/null 2>&1
 	cd ttytest/
 
 	gcc -o com com.c

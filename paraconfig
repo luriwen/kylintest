@@ -55,7 +55,7 @@ testcom1: /dev/ttyS1
 
 #testcom2: 测试串口2
 testcom2: /dev/ttyS2
-#如果，将同一串口比如ttyS3的Rx、Tx短接，则参数testcom1、testcom2都为/dev/ttyS3.
+#如果，将同一串口比如ttyS3的Rx、Tx短接，则参数testcom1、testcom2都为/dev/ttyS3.如果不想运行串口测试程序，则将两个参数都设置为NULL(大写敏感).
 
 #ttytime: 测试时间(单位min)
 ttytime: 30
