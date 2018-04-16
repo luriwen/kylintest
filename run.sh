@@ -363,79 +363,70 @@ Ttytest()
 	date >> runtime/ttytest/ttytime
 }
 
-echo -n "请输入对应号码:"
-read number
+echo -n "请输入对应号码(选项之间以空格间隔): "
+read options
 
-if [ $number == 1 ];then
-	echo "				U盘拷贝测试:				"
-	Diskcptest
-fi
+for number in $options
+do
+	if [ $number == q ];then
+		exit 0
+	elif [ $number == 1 ];then
+		echo "				U盘拷贝测试:				"
+		Diskcptest
+	elif [ $number == 2 ];then
+		echo "				Unixbench测试:"
+		UnixBench
+	elif [ $number == 3 ];then
+		echo "				STREAM测试:"
+		STREAM
+	elif [ $number == 4 ];then
+		echo "				iozone测试:"
+		Iozone
+	elif [ $number == 5 ];then
+		echo "				lmbench测试:"
+		Lmbench
+	elif [ $number == 6 ];then
+		echo "				iperf测试:"
+		Iperf
+	elif [ $number == 7 ];then
+		echo "				specjvm测试:"
+		Specjvm
+	elif [ $number == 8 ];then
+		echo "				串口测试:"
+		Ttytest
 
-if [ $number == 2 ];then
-	echo "				Unixbench测试:"
-	UnixBench
-fi
 
-if [ $number == 3 ];then
-	echo "				STREAM测试:"
-	STREAM
-fi
-
-if [ $number == 4 ];then
-	echo "				iozone测试:"
-	Iozone
-fi
-
-if [ $number == 5 ];then
-	echo "				lmbench测试:"
-	Lmbench
-fi
-
-if [ $number == 6 ];then
-	echo "				iperf测试:"
-	Iperf
-fi
-
-if [ $number == 7 ];then
-	echo "				specjvm测试:"
-	Specjvm
-fi
-
-if [ $number == 8 ];then
-	echo "				串口测试:"
-	Ttytest
-fi
-
-if [ $number == 9 ];then
-	echo "				1-9所有选项依次测试!"
+	elif [ $number == 9 ];then
+		echo "				所有选项依次测试!"
 	
-	echo "				U盘拷贝测试:					"
-	Diskcptest
+		echo "				U盘拷贝测试:					"
+		Diskcptest
 
-	echo "                          Unixbench循环测试:"
-	UnixBench
+		echo "                          Unixbench循环测试:"
+		UnixBench
 
-	echo "                          STREAM循环测试:"
-	STREAM
+		echo "                          STREAM循环测试:"
+		STREAM
 
-	echo "                          iozone循环测试:"
-	Iozone
+		echo "                          iozone循环测试:"
+		Iozone
 
-	echo "                          lmbench测试:"
-	Lmbench
+		echo "                          lmbench测试:"
+		Lmbench
 
-	echo "                          iperf测试:"
-	Iperf
+		echo "                          iperf测试:"
+		Iperf
 
-	echo "                          specjvm测试:"
-	Specjvm
+		echo "                          specjvm测试:"
+		Specjvm
 
-	echo "                          串口测试:"
-	Ttytest
-fi
+		echo "                          串口测试:"
+		Ttytest
 
-if [ $number == q ];then
-	exit 0
-fi
+	else
+		echo ""
+		echo "error: Please input the correct options!"
+	fi
+done
 
 exit 0
