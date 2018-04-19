@@ -66,20 +66,20 @@ Diskcptest()
 	for ((k=1; k<=$ucount; k++))
 	do
 		outecho
-		echo "第 $k 次数据拷贝!"
-		echo "第 $k 次数据拷贝!" >> result/udisk/udiskresult
+		echo "第 $k 次数据拷贝!" | tee -a result/udisk/udiskresult | tee -a result/result-${resultdate}
 
-		echo "从硬盘向U盘拷贝文件:" >> result/udisk/udiskresult
-		cp $ufiledir/$udiskfile  $udiskdir
+		echo "从硬盘向U盘拷贝文件:" | tee -a result/udisk/udiskresult | tee -a result/result-${resultdate}
+		cp $ufiledir/$udiskfile  $udiskdir &>> result/result-${resultdate}
 		rm $ufiledir/$udiskfile
 
-		echo "从u盘向硬盘拷贝文件:" >> result/udisk/udiskresult
-		cp $udiskdir/$udiskfile  $ufiledir
+		echo "从u盘向硬盘拷贝文件:" | tee -a result/udisk/udiskresult | tee -a result/result-${resultdate}
+		cp $udiskdir/$udiskfile  $ufiledir &>> result/result-${resultdate}
 		rm $udiskdir/$udiskfile
 
-		echo "第 $k 次数据拷贝结束!" >> result/udisk/udiskresult
-		echo "第 $k 次数据拷贝结束!"
+		echo "第 $k 次数据拷贝结束!" | tee -a result/udisk/udiskresult
 		outecho
+
+		echo "" | tee -a result/result-${resultdate}
 	done
 	umount $udiskdir
 
@@ -94,8 +94,11 @@ UnixBench()
 	mkdir -p result/unixbench
 	mkdir -p runtime/unixbench
 
+	unixdate=`date +%F`
+	eval $(awk '($1 == "unixcount:"){printf("unixcount=%s",$2)}' paraconfig)
+
 	outecho
-	echo "				UnixBench测试开始!"
+	echo "UnixBench测试:" | tee -a result/result-${resultdate}
 	echo "UnixBench测试开始时间:" >> runtime/unixbench/unixbenchtime
 	date >> runtime/unixbench/unixbenchtime
 	
@@ -105,27 +108,41 @@ UnixBench()
 	cd UnixBench/
 	make 
 
+	for ((k=1; k<=$unixcount; k++))
+	do
 	outecho
-	echo "					1线程测试:					"
-	./Run -c 1 >> ../../result/unixbench/run-c-1
+	echo "第 $k 次unixbench测试，总共测试 $unixcount 次" | tee -a  ../../result/result-${resultdate}
+	echo "" | tee -a ../../result/result-${resultdate}
+
+	echo "1线程测试:" | tee -a ../../result/result-${resultdate}
+	./Run -c 1 | tee ../../result/unixbench/${unixdate}-run-c-1-${k}
+	cat ../../result/unixbench/${unixdate}-run-c-1-${k} | grep -A100 "Benchmark Run" >> ../../result/result-${resultdate}
+	echo "" | tee -a ../../result/result-${resultdate}
 	outecho
 	
 	outecho
-	echo "					4线程测试:					"
-	./Run -c 4 >> ../../result/unixbench/run-c-4
+	echo "4线程测试:" | tee -a ../../result/result-${resultdate}
+	./Run -c 4 | tee ../../result/unixbench/${unixdate}-run-c-4-${k} 
+	cat ../../result/unixbench/${unixdate}-run-c-4-${k} | grep -A100 "Benchmark Run" >> ../../result/result-${resultdate}
+	echo "" | tee -a ../../result/result-${resultdate}
 	outecho
 
 	outecho
-	echo "					8线程测试:					"
-	./Run -c 8 >> ../../result/unixbench/run-c-8
+	echo "8线程测试:" | tee -a ../../result/result-${resultdate}
+	./Run -c 8 | tee ../../result/unixbench/${unixdate}-run-c-8-${k}
+	cat ../../result/unixbench/${unixdate}-run-c-8-${k} | grep -A100 "Benchmark Run" >> ../../result/result-${resultdate}
+	echo "" | tee -a ../../result/result-${resultdate}
 	outecho
 
 	outecho
-	echo "					16线程测试:					"
-	./Run -c 16 >> ../../result/unixbench/run-c-16
+	echo "16线程测试:" | tee -a ../../result/result-${resultdate}
+	./Run -c 16 | tee  ../../result/unixbench/${unixdate}-run-c-16-${k}
+	cat ../../result/unixbench/${unixdate}-run-c-16-${k} | grep -A100 "Benchmark Run" >> ../../result/result-${resultdate}
+	echo "" | tee -a ../../result/result-${resultdate}
 	outecho
-	cd ..
-	cd ..
+	done
+	echo "" | tee -a ../../result/result-${resultdate}
+	cd ../../
 
 	echo "UnixBench测试结束时间:" >> runtime/unixbench/unixbenchtime
 	date >> runtime/unixbench/unixbenchtime
@@ -137,31 +154,33 @@ STREAM()
 {
 	mkdir -p result/stream
 	mkdir -p runtime/stream
+	streamdate=`date +%F`
 
 	eval $(awk '($1 == "streamcount:"){printf("streamcount=%d",$2)}' paraconfig)
 	eval $(awk '($1 == "streamthread:"){printf("streamthread=%d",$2)}' paraconfig)
 
 	outecho
-	echo "				STREAM测试开始!"
-	echo "STREAM测试开始时间:" >> runtime/stream/streamtime
+	echo "STREAM测试:" | tee -a result/result-${resultdate}
+	echo "STREAM测试开始时间:" > runtime/stream/streamtime
 	date >> runtime/stream/streamtime
+
+	cd software
+	tar -xvf STREAM-32.tar.bz2 > /dev/null 2>&1
+	cd stream
+	gcc -O -fopenmp -DTHREAD_NBR=$streamthread -o stream_d stream_d.c second_wall.c -lm
 
 	for ((j=1; j<=$streamcount; j++))
 	do
-		cd software
-		tar -xvf STREAM-32.tar.bz2 > /dev/null 2>&1
-		cd stream
-		gcc -O -fopenmp -DTHREAD_NBR=$streamthread -o stream_d stream_d.c second_wall.c -lm
-
 		outecho
-		echo "第 $j 次测试开始！"
-		echo "第 $j 次测试结果:" >> ../../result/stream/streamresult
-		./stream_d >> ../../result/stream/streamresult
-		cd ../..
+		echo "第 $j 次stream测试,总共测试 $streamcount 次." | tee -a ../../result/result-${resultdate}
+		echo "第 $j 次测试结果:" >> ../../result/stream/${streamdate}-${j}
+		./stream_d | tee ../../result/stream/${streamdate}-${j} | tee -a ../../result/result-${resultdate}
+		echo "" | tee -a ../../result/result-${resultdate}
 		echo "第 $j 次测试结束！"
 		outecho
 	done
 
+	cd ../..
 	echo "STREAM测试结束时间:" >> runtime/stream/streamtime
 	date >> runtime/stream/streamtime
 	echo "				STREAM测试结束!" 
@@ -172,12 +191,15 @@ Iozone()
 {
 	mkdir -p result/iozone
 	mkdir -p runtime/iozone
+	iozonedate=`date +%F`
 
 	outecho
-	echo "				Iozone测试开始!"
+	echo "Iozone测试:" | tee -a result/result-${resultdate}
 	echo "Iozone测试开始时间:" >> runtime/iozone/iozonetime
 	date >> runtime/iozone/iozonetime
 	
+	eval $(awk '($1 == "iozonecount:"){printf("iozonecount=%s",$2)}' paraconfig)
+
 	cd software
 	tar -xvf iozone3_326.tar > /dev/null 2>&1
 	cd iozone3_326/src/current/
@@ -190,13 +212,26 @@ Iozone()
 	fi
 
 	eval $(awk '($1 == "MemTotal:"){printf("memsize=%d",$2*2/1048576)}' /proc/meminfo)
-	echo "iozone -a -i 0 -i 1 -i 2 -f result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb result/iozone/iozoneresult"
-	./iozone -a -i 0 -i 1 -i 2 -f ../../../../result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -Rb ../../../../result/iozone/iozoneresult
+
+	for ((k=1; k<=$iozonecount; k++))
+	do
+		echo "第 $k 次iozone测试,总共测试 $iozonecount 次 " | tee -a ../../../../result/result-${resultdate}
+		echo "iozone -a -i 0 -i 1 -i 2 -f result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -R result/iozone/${iozonedate}-${k}.iozone" | tee -a ../../../../result/result-${resultdate}
+		echo "" | tee -a ../../../../result/result-${resultdate}
+
+		./iozone -a -i 0 -i 1 -i 2 -f ../../../../result/iozone/iozone.testfile -n ${memsize}G -g ${memsize}G -R | tee ../../../../result/iozone/${iozonedate}-${k}.iozone
+
+		echo "" | tee -a  ../../../../result/result-${resultdate}
+		cat ../../../../result/iozone/${iozonedate}-${k}.iozone | grep -A100 "Excel output is below:" >> ../../../../result/result-${resultdate}
+		echo "" | tee -a  ../../../../result/result-${resultdate}
+	done
 
 	cd ../../../../
+	echo "" | tee -a result/result-${resultdate}
 	echo "Iozone测试结束时间:" >> runtime/iozone/iozonetime
 	date >> runtime/iozone/iozonetime
 	echo "				Iozone测试结束!"
+
 	outecho
 }
 
@@ -206,20 +241,38 @@ Lmbench()
 	mkdir -p runtime/lmbench
 
 	outecho
-	echo "				lmbench测试开始"
+	echo "lmbench 测试:" | tee -a result/result-${resultdate}
 	echo "lmbench测试开始时间:" >> runtime/lmbench/lmbenchtime
 	date >> runtime/lmbench/lmbenchtime
 
 	cd software
 	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2 > /dev/null 2>&1
 	cd lmbench/lmbench-3.0-a9
-	make results
+	make results  << EOF
 
-	echo "lmbench测试结束时间:" >> runtime/lmbench/lmbenchtime
-	date >> runtime/lmbench/lmbenchtime
+
+
+
+
+
+
+
+
+
+
+	no
+
+EOF
+
+	echo "lmbench测试结束时间:" >> ../../../runtime/lmbench/lmbenchtime
+	date >> ../../../runtime/lmbench/lmbenchtime
 
 	make see
 	cp -r results/* ../../../result/lmbench/
+
+	echo " " | tee -a ../../../result/result-${resultdate}
+	cat results/lmbench/summary.out >> ../../../result/result-${resultdate}
+	echo " " | tee -a ../../../result/result-${resultdate}
 	cd ../../../ 	
 }
 
@@ -227,8 +280,10 @@ Iperf()
 {
 	mkdir -p result/iperf
 	mkdir -p runtime/iperf
+	iperfdate=`date +%F`
 
 	outecho
+	echo "iperf测试:" | tee -a result/result-${resultdate}
 	eval $(awk '($1 == "ipaddr:"){printf("ipaddr=%s",$2)}' paraconfig)
 	eval $(awk '($1 == "bandwidth:"){printf("bandwidth=%s",$2)}' paraconfig)
 	eval $(awk '($1 == "iperftime:"){printf("iperftime=%d",$2)}' paraconfig)
@@ -239,27 +294,38 @@ Iperf()
 		| sed 's/%//g'`
 
 	if [ $lost_rate -eq 100 ]; then
-		echo "网络不通,请配置好网络环境"
+		echo "网络不通,请配置好网络环境" | tee -a result/result-${resultdate}
+		echo "" | tee -a result/result-${resultdate}
 		return 1
 	fi
 
-	echo "iperf  测试开始"
 	echo "iperf TCP测试开始时间:" >> runtime/iperf/iperftime
 	date >> runtime/iperf/iperftime
 
 
-	iperf -s >> result/iperf/iperfresult &
-	iperf -c $ipaddr -i 1 -t $iperftime >> result/iperf/iperfresult
+	iperf -s | tee -a result/iperf/${iperfdate}_iperf_tcp &
+	iperf -c $ipaddr -i 1 -t $iperftime | tee -a result/iperf/${iperfdate}_iperf_tcp
 	echo "iperf TCP测试结束时间:" >> runtime/iperf/iperftime
 	date >> runtime/iperf/iperftime
+
+	echo "1. iperf TCP 测试：" >> result/result-${resultdate}
+	echo "[ ID] Interval       Transfer     Bandwidth" >> result/result-${resultdate}
+	tail -n1 result/iperf/${iperfdate}_iperf_tcp >> result/result-${resultdate}
+	echo "" | tee -a result/result-${resultdate}
+
 	killall iperf
 
 	echo "iperf UDP测试开始时间:" >> runtime/iperf/iperftime
 	date >> runtime/iperf/iperftime
-	iperf -u -s >> result/iperf/iperfresult &
-	iperf -u -c $ipaddr -i 1 -t $iperftime -b $bandwidth >> result/iperf/iperfresult
+	iperf -u -s | tee -a result/iperf/${iperfdate}_iperf_udp &
+	iperf -u -c $ipaddr -i 1 -t $iperftime -b $bandwidth | tee -a result/iperf/${iperfdate}_iperf_udp
 	echo "iperf UDP测试结束时间:" >> runtime/iperf/iperftime
 	date >> runtime/iperf/iperftime
+
+	echo "2. iperf UDP 测试：" >> result/result-${resultdate}
+	echo "[ ID] Interval       Transfer     Bandwidth" >> result/result-${resultdate}
+	tail -n2 result/iperf/${iperfdate}_iperf_udp >> result/result-${resultdate}
+	echo "" | tee -a result/result-${resultdate}
 
 	killall iperf
 
@@ -272,18 +338,18 @@ Iperf()
 Specjvm()
 {
 	#运行此测试需要java环境，安装java及对应版本的jdk
-	#apt-get install java
 	#apt-get install openjdk-8-jdk
 
 	mkdir -p result/specjvm
 	mkdir -p runtime/specjvm
 
-	echo "specjvm  测试开始"
+	echo "specjvm 测试:" | tee -a result/result-${resultdate}
 	echo "specjvm 测试开始时间" >> runtime/specjvm/specjvmtime
 	date >> runtime/specjvm/specjvmtime
 	dirnow=`pwd`
 	aarch=$(uname -m)
 	eval $(awk '($1 == "specjvmins:"){printf("specjvmins=%s",$2)}' paraconfig)
+	rm $specjvmins/SPECjvm2008/ -rf  &> /dev/null
 	cd software
 	tar -xvf specjvm2008.tar > /dev/null 2>&1
 	cd specjvm2008/
@@ -298,7 +364,7 @@ Specjvm()
 
 
 Y
-$specjvmins/SPECjvm2008
+${specjvmins}/SPECjvm2008
 Y
 
 
@@ -315,15 +381,18 @@ EOF
 	export CLASSPATH=.:$JAVA_HOME/lib/tools.jar:/lib.dt.jar
 	export PATH=$JAVA_HOME/bin:$PATH
 
+	rm $specjvmins/SPECjvm2008/run-specjvm.sh &> /dev/null
 	cp run-specjvm.sh $specjvmins/SPECjvm2008/
 	cd $specjvmins/SPECjvm2008/
-#	java -jar SPECjvm2008.jar -ikv
+	#java -jar SPECjvm2008.jar -ikv
 	chmod +x run-specjvm.sh
 	./run-specjvm.sh
 
 	cp results/* -r $dirnow/result/specjvm/
 	rm run-specjvm.sh
 	cd $dirnow
+	cat result/specjvm/SPECjvm2008.001/SPECjvm2008.001.summary >> result/result-${resultdate}
+	echo "" | tee -a result/result-${resultdate}
 
 	echo "specjvm 测试结束"
 	echo "specjvm 测试结束时间" >> runtime/specjvm/specjvmtime
@@ -344,7 +413,7 @@ Ttytest()
 		return 0
 	fi
 
-	echo "tty 测试开始"
+	echo "tty 测试" | tee -a result/result-${resultdate}
 	echo "tty 测试开始时间" >> runtime/ttytest/ttytime
 	date >> runtime/ttytest/ttytime
 
@@ -354,17 +423,20 @@ Ttytest()
 
 	gcc -o com com.c
 
-	./com $testcom1 $testcom2 $ttytime
+	./com $testcom1 $testcom2 $ttytime | tee -a ../../result/result-${resultdate}
 
 	cd ../../
 
+	echo "" | tee -a result/result-${resultdate}
 	echo "tty 测试结束"
 	echo "tty 测试结束时间" >> runtime/ttytest/ttytime
 	date >> runtime/ttytest/ttytime
 }
 
+resultdate=`date +%F`
 echo -n "请输入对应号码(选项之间以空格间隔): "
 read options
+echo ""
 
 for number in $options
 do
@@ -429,4 +501,7 @@ do
 	fi
 done
 
+echo ""
+echo "测试结果位于result目录！"
+echo ""
 exit 0
