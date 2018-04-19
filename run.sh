@@ -502,6 +502,8 @@ do
 done
 
 echo ""
-echo "测试结果位于result目录！"
+echo ""
+echo "测试结果记录在 result/result-${resultdate}   ！"
+echo ""
 echo ""
 exit 0
