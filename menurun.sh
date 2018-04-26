@@ -1,6 +1,6 @@
 #!/bin/bash
 #run.sh 
-#version:2.0
+#version:3.1
 
 export LTPROOT="${PWD}"
 echo $LTPROOT | grep kylintest > /dev/null 2>&1
@@ -411,6 +411,7 @@ num=`grep  "CONFIG_" .config | grep y | wc -l`
 if [ $num -gt 0 ]; then
     tests=$(grep "CONFIG_" .config | grep y | awk -F = '{print $1}')
 
+	echo "Kylin test tart." | tee result/result-${resultdate}
 	for option in $tests
 	do
 		echo $option
@@ -448,6 +449,7 @@ if [ $num -gt 0 ]; then
 			Ttytest
 		fi
 	done
+	echo "Kylin test end." | tee -a result/result-${resultdate} 
 else
 	echo "warning: no test options"
 fi

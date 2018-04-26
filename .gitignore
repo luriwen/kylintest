@@ -1,2 +1,9 @@
 result/
 runtime/
+
+.config
+.config.old
+*.cmd
+*.o.cmd
+*.o
+*.swp
