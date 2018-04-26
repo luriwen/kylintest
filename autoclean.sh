@@ -12,3 +12,5 @@ rm ${specjvmins}/SPECjvm2008/ -rf &>  /dev/null
 rm software/stream/ -rf  &> /dev/null
 rm software/UnixBench/ -rf  &> /dev/null
 rm software/ttytest/ -rf  &>  /dev/null
+
+rm .config .config.old
