@@ -19,18 +19,20 @@ udiskdir: /opt/udisk
 
 ########################################################################
 #unixbench 测试参数
-#unixcount：unixcount测试轮数
-unixcount: 1
+#unixthreads: unixbench测试线程,最大为cpu核数。
+#unixcount: unixcount测试轮数
+unixthreads: 1 4
+unixcount: 1 
 
 
 ########################################################################
 #stream 测试参数
 #
-#streamthread: stream测试线程数
-streamthread: 16
+#streamthreads: stream测试线程数,最大为cpu核数
+streamthreads: 1 4 
 
 #streamcount: stream测试轮数
-streamcount: 5
+streamcount: 1
 
 
 ########################################################################
@@ -38,6 +40,14 @@ streamcount: 5
 #
 #iozonecount: iozone测试次数
 iozonecount: 1
+
+
+########################################################################
+#lmbench 测试参数
+#
+#lmmemsize: lmbench测试内存大小(MB),为空表示默认，服务器一般10G
+#lmmemsize: 10240
+lmmemsize: 4096
 
 
 ########################################################################
@@ -50,7 +60,7 @@ ipaddr: 192.168.140.223
 bandwidth: 1000M
 
 #iperftime：测试时间(单位为秒)
-iperftime: 30
+iperftime: 3600
 
 
 ########################################################################
@@ -58,6 +68,12 @@ iperftime: 30
 #
 #specjvmins: SPECjvm 安装目录(绝对路径)，默认为/SPECjvm2008
 specjvmins: /
+
+#specXmx: SPECjvm Xmx参数(MB)
+specXmx: 4096
+
+#specthreads: SPECjvm测试线程数，最大为cpu核数
+specthreads: 1 4
 
 
 ########################################################################

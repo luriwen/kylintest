@@ -1,0 +1,90 @@
+#######################################################################
+#u盘测试参数
+#
+#udisk: dev下u盘分区号(例如：sdb1)
+udisk: sdc1
+
+#udiskfile: 拷贝的文件名
+udiskfile: test.mp4
+
+#ufiledir: 拷贝的文件目录
+ufiledir: /opt
+
+#ucount: 拷贝循环次数
+ucount: 2
+
+#udiskdir: u盘挂载目录
+udiskdir: /opt/udisk
+
+
+########################################################################
+#unixbench 测试参数
+#unixthreads: unixbench测试线程,最大为cpu核数。
+#unixcount: unixcount测试轮数
+unixthreads: 1 4
+unixcount: 1 
+
+
+########################################################################
+#stream 测试参数
+#
+#streamthreads: stream测试线程数,最大为cpu核数
+streamthreads: 1 4 
+
+#streamcount: stream测试轮数
+streamcount: 1
+
+
+########################################################################
+#iozone 测试参数
+#
+#iozonecount: iozone测试次数
+iozonecount: 1
+
+
+########################################################################
+#lmbench 测试参数
+#
+#lmmemsize: lmbench测试内存大小(MB),为空表示默认，服务器一般10G
+#lmmemsize: 10240
+lmmemsize: 4096
+
+
+########################################################################
+#iperf 测试参数
+#
+#ipaddr: 服务ip地址
+ipaddr: 192.168.140.223
+
+#bandwidth：udp测试时的带宽
+bandwidth: 1000M
+
+#iperftime：测试时间(单位为秒)
+iperftime: 3600
+
+
+########################################################################
+#specjvm2008 测试参数
+#
+#specjvmins: SPECjvm 安装目录(绝对路径)，默认为/SPECjvm2008
+specjvmins: /
+
+#specXmx: SPECjvm Xmx参数(MB)
+specXmx: 4096
+
+#specthreads: SPECjvm测试线程数，最大为cpu核数
+specthreads: 1 4
+
+
+########################################################################
+#ttytest 测试参数
+#
+#testcom1: 测试串口1
+testcom1: /dev/ttyS1
+
+#testcom2: 测试串口2
+testcom2: /dev/ttyS2
+#如果，将同一串口比如ttyS3的Rx、Tx短接，则参数testcom1、testcom2都为/dev/ttyS3.如果不想运行串口测试程序，则将两个参数都设置为NULL(大写敏感).
+
+#ttytime: 测试时间(单位min)
+ttytime: 30
