@@ -134,8 +134,8 @@ Iozone()
 	eval $(awk '($1 == "iozonecount:"){printf("iozonecount=%s",$2)}' paraconfig)
 
 	cd software
-	tar -xvf iozone3_326.tar > /dev/null 2>&1
-	cd iozone3_326/src/current/
+	tar -xvf iozone3_483.tar > /dev/null 2>&1
+	cd iozone3_483/src/current/
 	
 	aarch=$(uname -m)
 	if [ $aarch == x86_64 ]; then
