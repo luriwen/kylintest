@@ -1,4 +1,4 @@
-version:  3.1
+version:  3.2
 
 综述：
 
@@ -8,9 +8,9 @@ run.sh: 测试执行脚本。
 ./run.sh
 ```
 
-**测试所用配置文件在$configs$目录中，分别可测试1天、2天、4天。选择一个配置文件拷贝到主目录下，命名为$paraconfig$。**
+**测试所用配置文件在$configs$目录中。选择一个配置文件拷贝到主目录下，命名为$paraconfig$。**
 
-**测试时所用到的参数，在$paraconfig$文件中。开始测试前一定要先设置好适当的参数。**
+**测试时所用到的参数，在$paraconfig$文件中。开始测试前需要先设置好适当的参数。**
 
 ### 一、测试界面
 
@@ -40,17 +40,13 @@ run.sh: 测试执行脚本。
 
      其中x表示测试线程数；
 
-   - Unixbench测试共进行1线程、4线程、8线程、16线程四轮测试；
-
-   - 测试时间记录在runtime/unixbench/unixbenchtime文件中;
-
-   - 测试结果分别记录在result/unixbench/目录下的run-c-1、run-c-4、run-c-8、run-c-16文件中。
+   - 测试结果分别记录在result/unixbench/目录下的文件中。
 
 3. Stream测试
 
    - stream测试参数：
 
-     streamthread：stream测试时的线程数；
+     streamthreads：stream测试时的线程数；
 
      streamcount：stream测试轮数。
 
@@ -65,8 +61,6 @@ run.sh: 测试执行脚本。
      ```shell
      ./stream_d
      ```
-
-   - 测试时间记录在runtime/stream/streamtime文件中；
 
    - 测试结果记录在result/stream/streamresult文件中。
 
@@ -86,13 +80,10 @@ run.sh: 测试执行脚本。
 
      iozone-test.xls为iozone测试结果记录文件。
 
-   - 测试时间记录在runtime/iozone/iozonetime文件中；
-
    - 测试结果记录在result/iozone/iozoneresult文件中。
 
 5. Lmbench测试
 
-   - 测试时间记录在runtime/lmbench/lmbenchtime文件中；
    - 测试结果记录在result/lmbench/目录下。
 
 6. Iperf测试
@@ -145,8 +136,6 @@ run.sh: 测试执行脚本。
 
      开启服务，然后再另外服务端开启iperf客户端测试。
 
-   - 测试时间记录在runtime/iperf/iperftime文件中；
-
    - 测试结果记录在result/iperf/iperfresult文件中。
 
 7. Specjvm测试
@@ -174,8 +163,6 @@ run.sh: 测试执行脚本。
      ./run-specjvm.sh
      ```
 
-   - 测试时间记录在runtime/specjvm/specjvmtime文件中；
-
    - 测试结果记录在result/specjvm/目录中。
 
 8. 串口测试
@@ -197,7 +184,5 @@ run.sh: 测试执行脚本。
      ```shell
      ./com  testcom1  testcom2  ttytime
      ```
-
-   - 测试时间记录在runtime/ttytest/ttytime文件中。
 
 9. 运行所有测试项
