@@ -27,7 +27,9 @@ cat <<-END >&2
 				*			->	6.iperf 测试		<-			 *
 				*			->	7.specjvm 测试		<-			 *
 				*			->	8.串口测试		<-			 *
-				*			->	9.所有项测试		<-			 *
+				*			->	9.llcbench 测试		<-			 *
+
+				*			->	all.所有项测试		<-			 *
 				*  q:退出
 				/*********************************************************************************/
 
@@ -170,13 +172,16 @@ Lmbench()
 
 	rm -rf software/lmbench  > /dev/null 2>&1
 	cd software
+	lmdir=`pwd`
+
 	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2 > /dev/null 2>&1
 	cd lmbench/lmbench-3.0-a9
+	cp $lmdir/gnu-os  scripts/gnu-os
 
-	aarch=$(uname -m)
-	if [ $aarch == aarch64 ]; then
-		sed -i 's/arm/aarch/' scripts/gnu-os
-	fi
+#	aarch=$(uname -m)
+#	if [ $aarch == aarch64 ]; then
+#		sed -i 's/arm/aarch/' scripts/gnu-os
+#	fi
 
 #	if [ -r /proc/meminfo ]; then
 #		TMP=`grep 'MemTotal:' /proc/meminfo | awk '{print $2}'`
@@ -339,6 +344,30 @@ Ttytest()
 	echo -e "tty 测试结束!\n"
 }
 
+Llcbench()
+{
+	#测试llcbench需要安装gnuplot包
+	#apt-get install gnuplot
+
+	mkdir -p result/llcbench
+
+	cd software/
+	rm -rf llcbench/ /dev/null 2>&1
+	tar -xvf llcbench.tar.gz
+	cd llcbench/
+
+	make linux-lam
+	make cache-bench
+	make cache-run
+	make cache-script
+	make cache-graph
+
+	cp -r results/*  ../../result/llcbench/
+	cd ../../
+
+	echo -e "llcbench 测试结束!\n"
+}
+
 resultdate=`date +%F`
 echo -n "请输入对应号码(选项之间以空格间隔): "
 read options
@@ -372,9 +401,12 @@ do
 	elif [ $number == 8 ];then
 		echo -e "				串口测试:\n"
 		Ttytest
-
-
 	elif [ $number == 9 ];then
+		echo -e "				llcbench测试:\n"
+		Llcbench
+
+
+	elif [ $number == all ];then
 		echo -e "				所有选项依次测试!\n"
 	
 		echo -e "				U盘拷贝测试:\n"
@@ -400,6 +432,9 @@ do
 
 		echo -e "                          串口测试:\n"
 		Ttytest
+
+		echo -e "				llcbench测试:\n"
+		Llcbench
 
 	else
 		echo -e"\nerror: Please input the correct options!\n"
