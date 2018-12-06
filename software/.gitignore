@@ -4,3 +4,5 @@ lmbench/
 UnixBench/
 ttytest/
 specjvm2008/
+llcbench/
+NUMA-STREAM-master/

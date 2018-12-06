@@ -28,6 +28,7 @@ cat <<-END >&2
 				*			->	7.specjvm 测试		<-			 *
 				*			->	8.串口测试		<-			 *
 				*			->	9.llcbench 测试		<-			 *
+				*			->	10.numa-stream 测试	<-			 *
 
 				*			->	all.所有项测试		<-			 *
 				*  q:退出
@@ -368,6 +369,29 @@ Llcbench()
 	echo -e "llcbench 测试结束!\n"
 }
 
+Numastream()
+{
+	#测试numa stream需要安装libnuma库
+	#apt-get  install  libnuma-dev
+
+	mkdir -p result/numastream
+
+	eval $(awk '($1 == "numathreads:"){printf("numathreads=%s",$2)}' paraconfig)
+
+	cd software/
+	#rm -rf NUMA-STREAM-master /dev/null 2>&1
+	tar -xvf NUMA-STREAM-master.tar
+	cd NUMA-STREAM-master/
+
+	export OMP_NUM_THREADS=$numathreads
+	gcc -O3 -std=c99 -fopenmp -DN=80000000 -DNTIMES=100 stream.c -o stream-gcc -lnuma 2>err.log
+	./stream-gcc >> numa.stream-$numathreads
+	cp numa.stream-$numathreads ../../result/numastream
+
+	cd ../../
+	echo -e "numa stream测试结束\n"
+}
+
 resultdate=`date +%F`
 echo -n "请输入对应号码(选项之间以空格间隔): "
 read options
@@ -404,6 +428,9 @@ do
 	elif [ $number == 9 ];then
 		echo -e "				llcbench测试:\n"
 		Llcbench
+	elif [ $number == 10 ];then
+		echo -e "				numa stream测试:\n"
+		Numastream
 
 
 	elif [ $number == all ];then
@@ -435,6 +462,9 @@ do
 
 		echo -e "				llcbench测试:\n"
 		Llcbench
+
+		echo -e "				numa stream测试:\n"
+		Numastream
 
 	else
 		echo -e"\nerror: Please input the correct options!\n"

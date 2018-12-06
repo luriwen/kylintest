@@ -88,3 +88,9 @@ testcom2: /dev/ttyS2
 
 #ttytime: 测试时间(单位min)
 ttytime: 30
+
+########################################################################
+#numa stream 测试参数
+#
+#numathreads: 测试线程数(CPU核数)
+numathreads: 64
