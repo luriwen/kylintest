@@ -178,6 +178,7 @@ Lmbench()
 	tar -jxvf LMBENCH-3.0-a9-32.tar.bz2 > /dev/null 2>&1
 	cd lmbench/lmbench-3.0-a9
 	cp $lmdir/gnu-os  scripts/gnu-os
+	cp $lmdir/getsummary  scripts/getsummary
 
 #	aarch=$(uname -m)
 #	if [ $aarch == aarch64 ]; then
